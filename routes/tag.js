@@ -67,15 +67,33 @@ router.get('/get/allTags', (req, res) => {
 
 // 查询标签下文章
 router.get('/get/articlesInTag', (req, res) => {
-  const { tagId } = req.query;
+  const { tagId, count, page } = req.query;
   Tag.findById(tagId, { name: 1, article: 1 })
+    .skip((page - 1) * count)
+    .limit(count)
     .populate({
       path: 'article',
       select: { title: 1, series: 1, tag: 1, create_at: 1 },
+      populate: [
+        { path: 'series', select: { name: 1 } },
+        { path: 'tag', select: { name: 1 } },
+      ],
       options: { sort: { create_at: -1 } },
     })
     .then(data => {
       res.json({ status: 1, data });
+    })
+    .catch(err => {
+      res.json({ status: 0, errMsg: err });
+    });
+});
+
+// 获取标签下文章总数
+router.get('/get/totalInTag', (req, res) => {
+  const { tagId } = req.query;
+  Tag.findById(tagId)
+    .then(data => {
+      res.json({ status: 1, total: data.article.length });
     })
     .catch(err => {
       res.json({ status: 0, errMsg: err });

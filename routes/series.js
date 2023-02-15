@@ -68,15 +68,33 @@ router.get('/get/allSeries', (req, res) => {
 
 // 查询合集中文章
 router.get('/get/articlesInSeries', (req, res) => {
-  const { seriesId } = req.query;
+  const { seriesId, count, page } = req.query;
   Series.findById(seriesId, { name: 1, article: 1 })
+    .skip((page - 1) * count)
+    .limit(count)
     .populate({
       path: 'article',
       select: { title: 1, series: 1, tag: 1, create_at: 1 },
+      populate: [
+        { path: 'series', select: { name: 1 } },
+        { path: 'tag', select: { name: 1 } },
+      ],
       options: { sort: { create_at: -1 } },
     })
     .then(data => {
       res.json({ status: 1, data });
+    })
+    .catch(err => {
+      res.json({ status: 0, errMsg: err });
+    });
+});
+
+// 获取合集中文章总数
+router.get('/get/totalInSeries', (req, res) => {
+  const { seriesId } = req.query;
+  Series.findById(seriesId)
+    .then(data => {
+      res.json({ status: 1, total: data.article.length });
     })
     .catch(err => {
       res.json({ status: 0, errMsg: err });
