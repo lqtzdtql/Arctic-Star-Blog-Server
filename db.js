@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
+require('dotenv').config();
 
-const connection = 'mongodb+srv://admin:a3338382@cluster0.gjvakm0.mongodb.net/?retryWrites=true&w=majority';
+const connection = process.env.DB_CONNECTION;
 mongoose.connect(connection, () => console.log('mongoose连接成功了！'));
 mongoose.connection.on('error', console.error);
