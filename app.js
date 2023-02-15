@@ -1,6 +1,20 @@
+require('./db');
 const express = require('express');
 const app = express();
 
+const series = require('./routes/series');
+const article = require('./routes/article');
+const tag = require('./routes/tag');
+
+app.use(express.json());
+
+app.use('/api/series', series);
+app.use('/api/article', article);
+app.use('/api/tag', tag);
+app.use('/', (req, res) => {
+  res.send('hhh');
+});
+
 app.listen(4000, () => {
-  console.log('server is running at http://127.0.0.0:4000');
+  console.log('server is running at http://127.0.0.1:4000');
 });
