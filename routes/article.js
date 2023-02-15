@@ -111,12 +111,15 @@ router.post('/modify', (req, res) => {
 
 // 获取所有文章信息（不包括正文）
 router.get('/get/allArticles', (req, res) => {
+  const { count, page } = req.query;
   Article.find({}, { title: 1, series: 1, tag: 1, create_at: 1 })
+    .skip((page - 1) * count)
+    .limit(count)
     .populate('series', { name: 1 })
     .populate('tag', { name: 1 })
     .sort({ create_at: -1 })
     .then(data => {
-      res.json({ status: 1, data });
+      res.json({ status: 1, data, pageData: { count, page } });
     })
     .catch(err => {
       res.json({ status: 0, errMsg: err });
@@ -131,6 +134,17 @@ router.get('/get/articleById', (req, res) => {
     .populate('tag', { name: 1 })
     .then(data => {
       res.json({ status: 1, data });
+    })
+    .catch(err => {
+      res.json({ status: 0, errMsg: err });
+    });
+});
+
+// 获取文章总数
+router.get('/get/total', (req, res) => {
+  Article.find({})
+    .then(data => {
+      res.json({ status: 1, total: data.length });
     })
     .catch(err => {
       res.json({ status: 0, errMsg: err });
