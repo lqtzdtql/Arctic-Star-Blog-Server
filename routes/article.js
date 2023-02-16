@@ -18,6 +18,7 @@ router.post('/add', (req, res) => {
     series: [series],
     tag,
     create_at: createAt,
+    content: text.slice(0, 100),
     text,
     view: 0,
   };
@@ -79,7 +80,7 @@ router.delete('/delete', (req, res) => {
 router.post('/modify', (req, res) => {
   const { articleId } = req.query;
   const { title, series, tag, text } = req.body;
-  Article.findByIdAndUpdate(articleId, { $set: { title, series, tag, text } })
+  Article.findByIdAndUpdate(articleId, { $set: { title, series, tag, text, content: text.slice(0, 100) } })
     .then(article => {
       const { series: oldSeries, tag: oldTag } = article;
       const promiseArr = [];
@@ -112,7 +113,7 @@ router.post('/modify', (req, res) => {
 // 获取所有文章信息（不包括正文）
 router.get('/get/allArticles', (req, res) => {
   const { count, page } = req.query;
-  Article.find({}, { title: 1, series: 1, tag: 1, create_at: 1 })
+  Article.find({}, { title: 1, series: 1, tag: 1, content: 1, create_at: 1 })
     .skip((page - 1) * count)
     .limit(count)
     .populate('series', { name: 1 })

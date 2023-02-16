@@ -11,6 +11,7 @@ const articleSchema = mongoose.Schema({
     ref: 'Tag',
   },
   create_at: { type: String },
+  content: { type: String },
   text: { type: String },
   view: { type: Number },
 });
