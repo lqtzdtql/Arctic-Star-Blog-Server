@@ -93,7 +93,7 @@ router.get('/get/totalInTag', (req, res) => {
   const { tagId } = req.query;
   Tag.findById(tagId)
     .then(data => {
-      res.json({ status: 1, total: data.article.length });
+      res.json({ status: 1, data: { total: data.article.length } });
     })
     .catch(err => {
       res.json({ status: 0, errMsg: err });

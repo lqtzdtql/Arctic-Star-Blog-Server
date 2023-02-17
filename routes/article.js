@@ -120,7 +120,7 @@ router.get('/get/allArticles', (req, res) => {
     .populate('tag', { name: 1 })
     .sort({ create_at: -1 })
     .then(data => {
-      res.json({ status: 1, data, pageData: { count, page } });
+      res.json({ status: 1, data: { data, pageData: { count, page } } });
     })
     .catch(err => {
       res.json({ status: 0, errMsg: err });
@@ -145,7 +145,7 @@ router.get('/get/articleById', (req, res) => {
 router.get('/get/total', (req, res) => {
   Article.find({})
     .then(data => {
-      res.json({ status: 1, total: data.length });
+      res.json({ status: 1, data: { total: data.length } });
     })
     .catch(err => {
       res.json({ status: 0, errMsg: err });
