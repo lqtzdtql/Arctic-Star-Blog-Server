@@ -5,7 +5,9 @@ const app = express();
 const series = require('./routes/series');
 const article = require('./routes/article');
 const tag = require('./routes/tag');
+const cors = require('cors');
 
+app.use(cors());
 app.use(express.json());
 
 app.use('/api/series', series);
