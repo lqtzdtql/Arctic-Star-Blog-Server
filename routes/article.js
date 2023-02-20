@@ -9,6 +9,13 @@ const Tag = require('../models/tag');
 
 const arrTool = require('../tool/arrTool');
 
+const articleViewsMap = new Map();
+setInterval(() => {
+  articleViewsMap.forEach((value, key) => {
+    Article.findByIdAndUpdate(key, { $set: { view: value } }).then(console.log('浏览量已更新'));
+  });
+}, 60 * 1000);
+
 // 新增文章
 router.post('/add', (req, res) => {
   const { title, series, tag, text } = req.body;
@@ -18,7 +25,7 @@ router.post('/add', (req, res) => {
     series: [series],
     tag,
     create_at: createAt,
-    content: text.slice(0, 100),
+    content: text.slice(0, 200),
     text,
     view: 0,
   };
@@ -32,18 +39,18 @@ router.post('/add', (req, res) => {
           }
           Promise.all(promiseArr)
             .then(data => {
-              res.json({ status: 1, data: `文章 ${article.title} 创建成功` });
+              res.json({ data: `文章 ${article.title} 创建成功` });
             })
             .catch(err => {
-              res.json({ status: 0, errMsg: err });
+              res.json({ errMsg: err });
             });
         })
         .catch(err => {
-          res.json({ status: 0, errMsg: err });
+          res.json({ errMsg: err });
         });
     })
     .catch(err => {
-      res.json({ status: 0, errMsg: err });
+      res.json({ errMsg: err });
     });
 });
 
@@ -61,18 +68,18 @@ router.delete('/delete', (req, res) => {
           }
           Promise.all(promiseArr)
             .then(data => {
-              res.json({ status: 1, data: `文章 ${title} 删除成功` });
+              res.json({ data: `文章 ${title} 删除成功` });
             })
             .catch(err => {
-              res.json({ status: 0, errMsg: err });
+              res.json({ errMsg: err });
             });
         })
         .catch(err => {
-          res.json({ status: 0, errMsg: err });
+          res.json({ errMsg: err });
         });
     })
     .catch(err => {
-      res.json({ status: 0, errMsg: err });
+      res.json({ errMsg: err });
     });
 });
 
@@ -99,14 +106,14 @@ router.post('/modify', (req, res) => {
       }
       Promise.all(promiseArr)
         .then(data => {
-          res.json({ status: 1, data: `文章 ${title} 修改成功` });
+          res.json({ data: `文章 ${title} 修改成功` });
         })
         .catch(err => {
-          res.json({ status: 0, errMsg: err });
+          res.json({ errMsg: err });
         });
     })
     .catch(err => {
-      res.json({ status: 0, errMsg: err });
+      res.json({ errMsg: err });
     });
 });
 
@@ -120,24 +127,33 @@ router.get('/get/allArticles', (req, res) => {
     .populate('tag', { name: 1 })
     .sort({ create_at: -1 })
     .then(data => {
-      res.json({ status: 1, data: { data, pageData: { count, page } } });
+      res.json({ data, pageData: { count, page } });
     })
     .catch(err => {
-      res.json({ status: 0, errMsg: err });
+      res.json({ errMsg: err });
     });
 });
 
 // 根据id获取文章详细信息
 router.get('/get/articleById', (req, res) => {
   const { articleId } = req.query;
-  Article.findById(articleId, { title: 1, series: 1, tag: 1, text: 1, create_at: 1 })
+  Article.findById(articleId, { title: 1, series: 1, tag: 1, text: 1, create_at: 1, view: 1 })
     .populate('series', { name: 1 })
     .populate('tag', { name: 1 })
     .then(data => {
-      res.json({ status: 1, data });
+      console.log(data);
+      articleViewsMap.set('' + data._id, (articleViewsMap.get('' + data._id) || data.view) + 1);
+      res.json({
+        title: data.title,
+        series: data.series,
+        tag: data.tag,
+        text: data.text,
+        create_at: data.create_at,
+        view: articleViewsMap.get('' + data._id),
+      });
     })
     .catch(err => {
-      res.json({ status: 0, errMsg: err });
+      res.json({ errMsg: err });
     });
 });
 
@@ -145,10 +161,10 @@ router.get('/get/articleById', (req, res) => {
 router.get('/get/total', (req, res) => {
   Article.find({})
     .then(data => {
-      res.json({ status: 1, data: { total: data.length } });
+      res.json({ total: data.length });
     })
     .catch(err => {
-      res.json({ status: 0, errMsg: err });
+      res.json({ errMsg: err });
     });
 });
 

@@ -11,10 +11,10 @@ router.post('/add', (req, res) => {
   const createAt = Date.parse(new Date());
   Tag.create({ name: tagName, article: [], create_at: createAt })
     .then(tag => {
-      res.json({ status: 1, data: `标签 ${tag.name} 创建成功` });
+      res.json({ data: `标签 ${tag.name} 创建成功` });
     })
     .catch(err => {
-      res.json({ status: 0, errMsg: err });
+      res.json({ errMsg: err });
     });
 });
 
@@ -29,14 +29,14 @@ router.delete('/delete', (req, res) => {
       }
       Promise.all(promiseArr)
         .then(data => {
-          res.json({ status: 1, data: `标签 ${tag.name} 删除成功` });
+          res.json({ data: `标签 ${tag.name} 删除成功` });
         })
         .catch(err => {
-          res.json({ status: 0, errMsg: err });
+          res.json({ errMsg: err });
         });
     })
     .catch(err => {
-      res.json({ status: 0, errMsg: err });
+      res.json({ errMsg: err });
     });
 });
 
@@ -46,10 +46,10 @@ router.put('/modify/name', (req, res) => {
   const { tagName } = req.body;
   Tag.findOneAndUpdate({ _id: tagId }, { $set: { name: tagName } })
     .then(tag => {
-      res.json({ status: 1, data: `标签 ${tag.name} 名称已修改为 ${tagName}` });
+      res.json({ data: `标签 ${tag.name} 名称已修改为 ${tagName}` });
     })
     .catch(err => {
-      res.json({ status: 0, errMsg: err });
+      res.json({ errMsg: err });
     });
 });
 
@@ -58,10 +58,10 @@ router.get('/get/allTags', (req, res) => {
   Tag.find({}, { name: 1 })
     .sort({ create_at: -1 })
     .then(data => {
-      res.json({ status: 1, data });
+      res.json({ data });
     })
     .catch(err => {
-      res.json({ status: 0, errMsg: err });
+      res.json({ errMsg: err });
     });
 });
 
@@ -81,10 +81,10 @@ router.get('/get/articlesInTag', (req, res) => {
       options: { sort: { create_at: -1 } },
     })
     .then(data => {
-      res.json({ status: 1, data });
+      res.json({ data });
     })
     .catch(err => {
-      res.json({ status: 0, errMsg: err });
+      res.json({ errMsg: err });
     });
 });
 
@@ -93,10 +93,21 @@ router.get('/get/totalInTag', (req, res) => {
   const { tagId } = req.query;
   Tag.findById(tagId)
     .then(data => {
-      res.json({ status: 1, data: { total: data.article.length } });
+      res.json({ total: data.article.length });
     })
     .catch(err => {
-      res.json({ status: 0, errMsg: err });
+      res.json({ errMsg: err });
+    });
+});
+
+// 获取标签总数
+router.get('/get/total', (req, res) => {
+  Tag.find({})
+    .then(data => {
+      res.json({ total: data.length });
+    })
+    .catch(err => {
+      res.json({ errMsg: err });
     });
 });
 

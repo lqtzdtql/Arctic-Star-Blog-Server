@@ -10,7 +10,7 @@ const articleSchema = mongoose.Schema({
     type: [mongoose.Schema.Types.ObjectId],
     ref: 'Tag',
   },
-  create_at: { type: String },
+  create_at: { type: Number },
   content: { type: String },
   text: { type: String },
   view: { type: Number },

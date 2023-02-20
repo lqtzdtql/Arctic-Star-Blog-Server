@@ -12,10 +12,10 @@ router.post('/add', (req, res) => {
   const createAt = Date.parse(new Date());
   Series.create({ name: seriesName, article: [], create_at: createAt })
     .then(series => {
-      res.json({ status: 1, data: `合集 ${series.name} 创建成功` });
+      res.json({ data: `合集 ${series.name} 创建成功` });
     })
     .catch(err => {
-      res.json({ status: 0, errMsg: err });
+      res.json({ errMsg: err });
     });
 });
 
@@ -30,14 +30,14 @@ router.delete('/delete', (req, res) => {
       }
       Promise.all(promiseArr)
         .then(data => {
-          res.json({ status: 1, data: `合集 ${series.name} 删除成功` });
+          res.json({ data: `合集 ${series.name} 删除成功` });
         })
         .catch(err => {
-          res.json({ status: 0, errMsg: err });
+          res.json({ errMsg: err });
         });
     })
     .catch(err => {
-      res.json({ status: 0, errMsg: err });
+      res.json({ errMsg: err });
     });
 });
 
@@ -47,10 +47,10 @@ router.put('/modify/name', (req, res) => {
   const { seriesName } = req.body;
   Series.findOneAndUpdate({ _id: seriesId }, { $set: { name: seriesName } }, {})
     .then(series => {
-      res.json({ status: 1, data: `合集 ${series.name} 名称已修改为 ${seriesName}` });
+      res.json({ data: `合集 ${series.name} 名称已修改为 ${seriesName}` });
     })
     .catch(err => {
-      res.json({ status: 0, errMsg: err });
+      res.json({ errMsg: err });
     });
 });
 
@@ -59,10 +59,10 @@ router.get('/get/allSeries', (req, res) => {
   Series.find({}, { name: 1 })
     .sort({ create_at: -1 })
     .then(data => {
-      res.json({ status: 1, data });
+      res.json({ data });
     })
     .catch(err => {
-      res.json({ status: 0, errMsg: err });
+      res.json({ errMsg: err });
     });
 });
 
@@ -82,10 +82,10 @@ router.get('/get/articlesInSeries', (req, res) => {
       options: { sort: { create_at: -1 } },
     })
     .then(data => {
-      res.json({ status: 1, data });
+      res.json({ data });
     })
     .catch(err => {
-      res.json({ status: 0, errMsg: err });
+      res.json({ errMsg: err });
     });
 });
 
@@ -94,10 +94,21 @@ router.get('/get/totalInSeries', (req, res) => {
   const { seriesId } = req.query;
   Series.findById(seriesId)
     .then(data => {
-      res.json({ status: 1, data: { total: data.article.length } });
+      res.json({ data: { total: data.article.length } });
     })
     .catch(err => {
-      res.json({ status: 0, errMsg: err });
+      res.json({ errMsg: err });
+    });
+});
+
+// 获取合集总数
+router.get('/get/total', (req, res) => {
+  Series.find({})
+    .then(data => {
+      res.json({ total: data.length });
+    })
+    .catch(err => {
+      res.json({ errMsg: err });
     });
 });
 
