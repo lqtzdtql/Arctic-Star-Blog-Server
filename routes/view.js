@@ -6,17 +6,29 @@ const router = express.Router();
 const View = require('../models/view');
 
 let tempView = 0;
+View.find({})
+  .then(data => {
+    tempView = data[0].view;
+  })
+  .catch(err => {
+    console.log(err);
+  });
 
 // 获取浏览量
 router.get('/get', (req, res) => {
   View.find({})
     .then(data => {
-      tempView = Math.max(tempView, data[0].view) + 1;
       res.json({ view: tempView });
     })
     .catch(err => {
       res.json({ errMsg: err });
     });
+});
+
+// 增加浏览量
+router.get('/add', (req, res) => {
+  tempView++;
+  res.send('浏览量增加成功');
 });
 
 setInterval(() => {

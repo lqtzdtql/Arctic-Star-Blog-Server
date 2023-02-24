@@ -7,6 +7,8 @@ const article = require('./routes/article');
 const tag = require('./routes/tag');
 const notice = require('./routes/notice');
 const view = require('./routes/view');
+const link = require('./routes/link');
+const log = require('./routes/log');
 const cors = require('cors');
 
 app.use(cors());
@@ -17,8 +19,10 @@ app.use('/api/article', article);
 app.use('/api/tag', tag);
 app.use('/api/notice', notice);
 app.use('/api/view', view);
+app.use('/api/link', link);
+app.use('/api/log', log);
 app.use('/', (req, res) => {
-  res.send('hhh');
+  res.send('出错啦');
 });
 
 app.listen(4000, () => {

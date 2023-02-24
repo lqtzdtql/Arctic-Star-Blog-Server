@@ -58,7 +58,7 @@ router.get('/get/allTags', (req, res) => {
   Tag.find({}, { name: 1 })
     .sort({ create_at: -1 })
     .then(data => {
-      res.json({ data });
+      res.json(data);
     })
     .catch(err => {
       res.json({ errMsg: err });
@@ -67,21 +67,19 @@ router.get('/get/allTags', (req, res) => {
 
 // 查询标签下文章
 router.get('/get/articlesInTag', (req, res) => {
-  const { tagId, count, page } = req.query;
+  const { tagId } = req.query;
   Tag.findById(tagId, { name: 1, article: 1 })
-    .skip((page - 1) * count)
-    .limit(count)
     .populate({
       path: 'article',
-      select: { title: 1, series: 1, tag: 1, create_at: 1 },
-      populate: [
-        { path: 'series', select: { name: 1 } },
-        { path: 'tag', select: { name: 1 } },
-      ],
+      select: { title: 1, create_at: 1 },
+      // populate: [
+      //   { path: 'series', select: { name: 1 } },
+      //   { path: 'tag', select: { name: 1 } },
+      // ],
       options: { sort: { create_at: -1 } },
     })
     .then(data => {
-      res.json({ data });
+      res.json(data);
     })
     .catch(err => {
       res.json({ errMsg: err });

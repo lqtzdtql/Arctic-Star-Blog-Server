@@ -56,10 +56,10 @@ router.put('/modify/name', (req, res) => {
 
 // 查询所有合集
 router.get('/get/allSeries', (req, res) => {
-  Series.find({}, { name: 1 })
+  Series.find({}, { name: 1, article: 1 })
     .sort({ create_at: -1 })
     .then(data => {
-      res.json({ data });
+      res.json(data);
     })
     .catch(err => {
       res.json({ errMsg: err });
@@ -68,21 +68,19 @@ router.get('/get/allSeries', (req, res) => {
 
 // 查询合集中文章
 router.get('/get/articlesInSeries', (req, res) => {
-  const { seriesId, count, page } = req.query;
+  const { seriesId } = req.query;
   Series.findById(seriesId, { name: 1, article: 1 })
-    .skip((page - 1) * count)
-    .limit(count)
     .populate({
       path: 'article',
-      select: { title: 1, series: 1, tag: 1, create_at: 1 },
-      populate: [
-        { path: 'series', select: { name: 1 } },
-        { path: 'tag', select: { name: 1 } },
-      ],
+      select: { title: 1, create_at: 1 },
+      // populate: [
+      //   { path: 'series', select: { name: 1 } },
+      //   { path: 'tag', select: { name: 1 } },
+      // ],
       options: { sort: { create_at: -1 } },
     })
     .then(data => {
-      res.json({ data });
+      res.json(data);
     })
     .catch(err => {
       res.json({ errMsg: err });

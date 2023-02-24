@@ -12,7 +12,7 @@ const arrTool = require('../tool/arrTool');
 const articleViewsMap = new Map();
 setInterval(() => {
   articleViewsMap.forEach((value, key) => {
-    Article.findByIdAndUpdate(key, { $set: { view: value } }).then(console.log('浏览量已更新'));
+    Article.findByIdAndUpdate(key, { $set: { view: value } }).then(console.log('文章浏览量已更新'));
   });
 }, 60 * 1000);
 
@@ -141,16 +141,24 @@ router.get('/get/articleById', (req, res) => {
     .populate('series', { name: 1 })
     .populate('tag', { name: 1 })
     .then(data => {
-      console.log(data);
       articleViewsMap.set('' + data._id, (articleViewsMap.get('' + data._id) || data.view) + 1);
-      res.json({
-        title: data.title,
-        series: data.series,
-        tag: data.tag,
-        text: data.text,
-        create_at: data.create_at,
-        view: articleViewsMap.get('' + data._id),
-      });
+      data.view = articleViewsMap.get('' + data._id);
+      res.json(data);
+    })
+    .catch(err => {
+      res.json({ errMsg: err });
+    });
+});
+
+// 模糊查询文章
+router.get('/get/articleByString', (req, res) => {
+  const { count, page, target } = req.query;
+  Article.find({ $or: [{ title: { $regex: target } }, { text: { $regex: target } }] }, { title: 1, create_at: 1 })
+    .skip((page - 1) * count)
+    .limit(count)
+    .sort({ create_at: -1 })
+    .then(data => {
+      res.json({ data, pageData: { count, page } });
     })
     .catch(err => {
       res.json({ errMsg: err });
